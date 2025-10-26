@@ -2,18 +2,15 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { BrowserRouter as Router, Routes, Route, useParams } from "react-router-dom";
 import axios from "axios";
 
-const BACKEND_URL = "https://urlshortenerbackend-4ck6.onrender.com";
-
 function Home() {
   const [url, setUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!url) return alert("Please enter a URL");
-
     try {
-      const res = await axios.post(`${BACKEND_URL}/shorten`, { originalUrl: url });
+      const backendUrl = "https://urlshortenerbackend-4ck6.onrender.com";
+      const res = await axios.post(`${backendUrl}/shorten`, { originalUrl: url });
       setShortUrl(res.data.shortUrl);
     } catch (err) {
       console.error(err);
@@ -38,7 +35,6 @@ function Home() {
           Shorten
         </button>
       </form>
-
       {shortUrl && (
         <div style={{ marginTop: "1rem" }}>
           Short URL:{" "}
@@ -53,10 +49,11 @@ function Home() {
 
 function Redirect() {
   const { shortUrl } = useParams<{ shortUrl: string }>();
+  const backendUrl = "https://urlshortenerbackend-4ck6.onrender.com";
 
   if (shortUrl) {
-    // Redirect user to the backend endpoint
-    window.location.href = `${BACKEND_URL}/${shortUrl}`;
+    // Redirect the browser to backend route, which then redirects to original URL
+    window.location.href = `${backendUrl}/${shortUrl}`;
   }
 
   return <p>Redirecting...</p>;
