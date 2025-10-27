@@ -1,71 +1,30 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import { BrowserRouter as Router, Routes, Route, useParams } from "react-router-dom";
-import axios from "axios";
-
-function Home() {
-  const [url, setUrl] = useState("");
-  const [shortUrl, setShortUrl] = useState("");
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const backendUrl = "https://urlshortenerbackend-4ck6.onrender.com";
-      const res = await axios.post(`${backendUrl}/shorten`, { originalUrl: url });
-      setShortUrl(res.data.shortUrl);
-    } catch (err) {
-      console.error(err);
-      alert("Error creating short URL");
-    }
-  };
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => setUrl(e.target.value);
-
-  return (
-    <div style={{ padding: "2rem", textAlign: "center" }}>
-      <h1>URL Shortener</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Enter your URL"
-          value={url}
-          onChange={handleChange}
-          style={{ width: "300px", padding: "0.5rem" }}
-        />
-        <button type="submit" style={{ padding: "0.5rem 1rem", marginLeft: "1rem" }}>
-          Shorten
-        </button>
-      </form>
-      {shortUrl && (
-        <div style={{ marginTop: "1rem" }}>
-          Short URL:{" "}
-          <a href={`/${shortUrl}`} target="_blank" rel="noreferrer">
-            {`${window.location.origin}/${shortUrl}`}
-          </a>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Redirect() {
-  const { shortUrl } = useParams<{ shortUrl: string }>();
-  const backendUrl = "https://urlshortenerbackend-4ck6.onrender.com";
-
-  if (shortUrl) {
-    // Redirect the browser to backend route, which then redirects to original URL
-    window.location.href = `${backendUrl}/${shortUrl}`;
-  }
-
-  return <p>Redirecting...</p>;
-}
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Home from "./pages/Home";
+import Redirect from "./pages/Redirect";
+import About from "./pages/About";
 
 export default function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/:shortUrl" element={<Redirect />} />
-      </Routes>
+      {/* Full white background */}
+      <div className="flex flex-col min-h-screen bg-white text-gray-800">
+        <Header />
+
+        {/* Center content */}
+        <main className="flex-grow flex justify-center mt-5 px-4">
+          <div className="w-full max-w-5xl">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/:shortUrl" element={<Redirect />} />
+            </Routes>
+          </div>
+        </main>
+
+        <Footer />
+      </div>
     </Router>
   );
 }
